@@ -52,7 +52,7 @@ const embed_rocks_proxy = async (req, res) => {
       });
   } else if (action === 'delete') {
     return deleteUrls({ urls })
-      .then(response => res.status(200).send(response))
+      .then(() => res.status(200).send({ success: true }))
       .catch(err => {
         console.error(err);
         return res.status(500).send({ error: err });

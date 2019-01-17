@@ -31,7 +31,7 @@ const get = async urls => {
 
       // ... return the value, only if the caches has not expired
       if (!hasCacheExpired(embed)) {
-        map[embed.url] = embed;
+        map[embed.requested_url || embed.url] = embed;
       }
 
       return map;
@@ -56,18 +56,19 @@ const save = async embedsMap => {
   // ... save all embeds to db, ignore embeds with errors
   const promises = embedsList.map(embed => {
     // ... cached timestamp and cache key
-    embed.cache_key = makeCacheKey(embed.url);
+    embed.cache_key = makeCacheKey(embed.requested_url || embed.url);
     embed.cached_at = new Date().toISOString();
 
     return rtdb.ref(`/embed_rocks_cache/${embed.cache_key}`).set(embed);
   });
 
-  return Promise.all(promises).then(() =>
-    embedsList.reduce((map, embed) => {
-      map[embed.url] = embed;
+  return Promise.all(promises).then(() => {
+    console.debug(`Saved ${embedsList.length} to RTDB`);
+    return embedsList.reduce((map, embed) => {
+      map[embed.requested_url || embed.url] = embed;
       return map;
-    }, {})
-  );
+    }, {});
+  });
 };
 
 const remove = async urls => {
@@ -76,7 +77,7 @@ const remove = async urls => {
 
   // ... collect all promises that fetch from cache
   const promises = cacheKeys.map(key =>
-    rtdb.ref(`/embed_rocks_cache/${key}`).delete()
+    rtdb.ref(`/embed_rocks_cache/${key}`).set(null)
   );
 
   return Promise.all(promises);

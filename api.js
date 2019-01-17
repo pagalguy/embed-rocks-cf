@@ -16,11 +16,21 @@ const getUrls = async ({ urls, no_cache = false }) => {
       return embeds
         .get(notCachedUrls)
         .then(fetchedEmbeds => cache.save(fetchedEmbeds))
-        .then(savedEmbeds => Object.assign({}, cachedEmbeds, savedEmbeds));
+        .then(savedEmbeds => {
+          const responseEmbeds = Object.assign({}, cachedEmbeds, savedEmbeds);
+          console.debug(
+            `Requested ${urls.length} URLs. Returning ${
+              Object.keys(responseEmbeds).length
+            } embeds.`
+          );
+          return responseEmbeds;
+        });
     });
   }
 };
-const deleteUrls = async ({ urls }) => {};
+const deleteUrls = async ({ urls }) => {
+  return cache.remove(urls);
+};
 
 module.exports = {
   getUrls,
