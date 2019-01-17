@@ -1,0 +1,16 @@
+{
+  "name": "embed-rocks-cf",
+  "description": "Cloud Function that caches API responses from https://embed.rocks/ in Firebase Realtime DB",
+  "version": "1.0.0",
+  "dependencies": {
+    "firebase-admin": "^6.5.0",
+    "superagent": "^4.1.0"
+  },
+  "scripts": {
+    "deploy": "gcloud --project $GCP_PROJECT functions deploy embed_rocks_proxy --region asia-northeast1 --runtime nodejs8 --trigger-http --set-env-vars API_KEY=\"$API_KEY\",SECRET_AUTH_TOKEN=\"$SECRET_AUTH_TOKEN\"",
+    "local": "node local.js"
+  },
+  "devDependencies": {
+    "express": "^4.16.4"
+  }
+}
